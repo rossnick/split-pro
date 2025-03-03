@@ -21,6 +21,7 @@ interface AddExpenseState {
   fileKey?: string;
   canSplitScreenClosed: boolean;
   splitScreenOpen: boolean;
+  expenseDate: Date | undefined;
   actions: {
     setAmount: (amount: number) => void;
     setAmountStr: (amountStr: string) => void;
@@ -40,6 +41,7 @@ interface AddExpenseState {
     setFileKey: (fileKey: string) => void;
     resetState: () => void;
     setSplitScreenOpen: (splitScreenOpen: boolean) => void;
+    setExpenseDate: (expenseDate: Date | undefined) => void;
   };
 }
 
@@ -60,6 +62,7 @@ export const useAddExpenseStore = create<AddExpenseState>()((set) => ({
   fileKey: undefined,
   canSplitScreenClosed: true,
   splitScreenOpen: false,
+  expenseDate: undefined,
   actions: {
     setAmount: (amount) =>
       set((s) => {
@@ -181,6 +184,7 @@ export const useAddExpenseStore = create<AddExpenseState>()((set) => ({
       }));
     },
     setSplitScreenOpen: (splitScreenOpen) => set({ splitScreenOpen }),
+    setExpenseDate: (expenseDate) => set({ expenseDate }),
   },
 }));
 
@@ -266,7 +270,7 @@ export function calculateSplitShareBasedOnAmount(
       // For equal split, split share should be amount/participants or 0 if amount is 0
       updatedParticipants = participants.map((p) => ({
         ...p,
-        splitShare: p.amount === 0 ? 0 : 1,
+        splitShare: (paidBy?.id === p.id ? (p.amount ?? 0) - amount : p.amount) === 0 ? 0 : 1,
       }));
       break;
 
